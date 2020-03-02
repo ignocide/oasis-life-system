@@ -10,9 +10,7 @@ export class AlarmsService {
   private keep: boolean;
   private snoozeCount: number;
 
-  constructor() {
-    this.start();
-  }
+  constructor() {}
 
   @Cron('0 7 * * *')
   morningCallJob() {

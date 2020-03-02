@@ -16,7 +16,7 @@ class Audio {
   _isPlaying: boolean;
   _continueTimer: NodeJS.Timeout;
   constructor(audioPath, opts = { ...defaultOpts }) {
-    this._path = path.join(process.env.PWD, audioPath);
+    this._path = audioPath;
     this._opts = Object.assign({}, defaultOpts, opts);
     this._isPlaying = false;
   }
