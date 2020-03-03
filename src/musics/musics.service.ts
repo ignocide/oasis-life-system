@@ -32,13 +32,14 @@ export class MusicsService {
     return info;
   }
 
-  async add(url: string) {
+  async add(url: string): Promise<void> {
     await this.downloadFromYoutube(url, (audioFileName) => {
       this.playlist.unshift(audioFileName);
+      this.initialPlaylist.push(audioFileName);
     });
   }
 
-  shuffle(arr: any[]) {
+  shuffle(arr: any[]): any[] {
     var j, x, i;
     for (i = arr.length - 1; i > 0; i--) {
       j = Math.floor(Math.random() * (i + 1));
@@ -49,7 +50,10 @@ export class MusicsService {
     return arr;
   }
 
-  play() {
+  play(): void {
+    if (this.audio) {
+      return;
+    }
     if (!this.playlist.length) {
       if (!this.initialPlaylist.length) {
         this.stop();
