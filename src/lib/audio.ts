@@ -1,6 +1,7 @@
-import Player from 'ffplay';
+// var Player = require('./ffplay');
+import Player from './ffplay';
 import * as path from 'path';
-
+import * as readline from 'readline';
 const defaultOpts = {
   onFinish: function() {},
 };
@@ -11,7 +12,7 @@ interface AudioOptions {
 
 class Audio {
   _path: string;
-  _audio: Player;
+  _audio: any;
   _opts: AudioOptions;
   _isPlaying: boolean;
   _continueTimer: NodeJS.Timeout;

@@ -1,18 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import ytdl from 'ytdl-core';
 import * as fs from 'fs';
 import * as path from 'path';
-import readline from 'readline';
 import Audio from '../lib/audio';
+import { MusicGateway } from '../music.gateway';
 
 @Injectable()
-export class MusicsService {
+export class MusicService {
   private audioFolder: string = path.join(process.env.PWD, 'musics');
   private playlist: string[] = [];
   private initialPlaylist: string[] = [];
-  private isPlaying: boolean = false;
+  isPlaying: boolean = false;
   private audio?: Audio = null;
-  constructor() {
+
+  constructor(
+    @Inject(forwardRef(() => MusicGateway))
+    private readonly musicGateway: MusicGateway,
+  ) {
     var files: string[] = fs.readdirSync(this.audioFolder);
     //@todo mp3파일만 호출
     this.initialPlaylist = this.shuffle(files);
@@ -20,15 +24,17 @@ export class MusicsService {
   }
 
   async downloadFromYoutube(link: string, onFinish: (audioFileName: string) => void = () => {}) {
-    let audioOptions = { filter: (format) => format.container === 'mp4', quality: 'highest' };
+    let audioOptions = { filter: (format) => format.mimeType.indexOf('audio') === 0, quality: 'highest' };
+    // let audioOptions = { filter: (format) => format.container === 'mp4', quality: 'highest' };
     let info = await ytdl.getInfo(link, audioOptions);
-    let title = info.title;
-    title = title.replace(/\s/gi, '_');
-    let audioFileName = [ title, 'mp3' ].join('.');
-    let audioOutput = path.join(this.audioFolder, audioFileName);
-    ytdl(link).pipe(fs.createWriteStream(audioOutput)).on('finish', () => {
-      onFinish(audioFileName);
-    });
+    console.log(info);
+    // let title = info.title;
+    // title = title.replace(/\s/gi, '_');
+    // let audioFileName = [ title, 'mp3' ].join('.');
+    // let audioOutput = path.join(this.audioFolder, audioFileName);
+    // ytdl(link, audioOptions).pipe(fs.createWriteStream(audioOutput)).on('finish', () => {
+    //   onFinish(audioFileName);
+    // });
     return info;
   }
 
@@ -79,5 +85,9 @@ export class MusicsService {
       this.audio.stop();
       this.audio = null;
     }
+  }
+
+  getCurrentAudio() {
+    return this.audio;
   }
 }
